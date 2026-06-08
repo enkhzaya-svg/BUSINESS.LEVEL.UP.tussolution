@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Дижитал хувьсалд системтэйгээр шилжихүй — tuss.io</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Rubik', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace'],
+        },
+        colors: {
+          cobalt: {
+            50: '#f0f6fe',
+            100: '#e1effd',
+            200: '#bce0fa',
+            600: '#1a73e8',
+            700: '#155cb2',
+            900: '#0d47a1',
+            navy: '#1b2a8a',
+            slate: '#0f172a',
+            border: '#e2e8f0',
+            textGray: '#475569'
+          }
+        }
+      }
+    }
+  }
+</script>
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    color: #0f172a;
+    overflow: hidden;
+  }
+
+  .g-transition {
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  /* Iridescent light pastel aurora background tuned to match the uploaded posters:
+     pink / lavender on the left, sky-blue on the right, a soft sky band up top. */
+  .iridescent-bg {
+    background:
+      radial-gradient(circle at 0% 100%, rgba(244, 114, 182, 0.18) 0%, transparent 45%),
+      radial-gradient(circle at 10% 38%, rgba(167, 139, 250, 0.16) 0%, transparent 42%),
+      radial-gradient(circle at 100% 18%, rgba(96, 165, 250, 0.18) 0%, transparent 45%),
+      radial-gradient(circle at 88% 100%, rgba(125, 211, 252, 0.16) 0%, transparent 45%),
+      radial-gradient(circle at 50% -5%, rgba(186, 230, 253, 0.32) 0%, transparent 35%),
+      #ffffff;
+    background-size: cover;
+  }
+
+  /* Technical clean dot-grid background superimposed over the iridescent gradient */
+  .tech-grid {
+    background-size: 32px 32px;
+    background-image: radial-gradient(rgba(148, 163, 184, 0.15) 0.8px, transparent 0.8px);
+  }
+
+  /* Slide Cinematic Transition (Soft Blur & Scale-in Cross-blend with Scroll Support) */
+  .slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 7.5rem 2rem 6.5rem 2rem; /* Safer padding for header and footer */
+    opacity: 0;
+    filter: blur(12px);
+    transform: scale(0.96);
+    pointer-events: none;
+    transition: opacity 0.7s cubic-bezier(0.25, 1, 0.5, 1),
+                filter 0.7s cubic-bezier(0.25, 1, 0.5, 1),
+                transform 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 10;
+    overflow-y: auto; /* Enable safe vertical scrolling within each slide */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .slide.active {
+    opacity: 1;
+    filter: blur(0px);
+    transform: scale(1);
+    pointer-events: auto;
+    z-index: 20;
+  }
+
+  /* Safe scrolling alignment for smaller screens/heights */
+  @media (max-height: 750px) {
+    .slide {
+      justify-content: flex-start;
+    }
+  }
+
+  /* Animating elements staggered within active slide */
+  .slide .animate-el {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .slide.active .animate-el {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .delay-100 { transition-delay: 100ms; }
+  .delay-200 { transition-delay: 200ms; }
+  .delay-300 { transition-delay: 300ms; }
+  .delay-400 { transition-delay: 400ms; }
+  .delay-500 { transition-delay: 500ms; }
+
+  /* Premium Glassmorphic Glow Cards */
+  .premium-card {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(255, 255, 255, 0.6);
+    transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .premium-card:hover {
+    border-color: #1a73e8;
+    box-shadow: 0 12px 30px rgba(26, 115, 232, 0.06), 0 0 1px 1px rgba(26, 115, 232, 0.15);
+    transform: translateY(-2px);
+  }
+
+  @keyframes pulse-light {
+    0%, 100% { box-shadow: 0 0 10px rgba(26, 115, 232, 0.05); }
+    50% { box-shadow: 0 0 25px rgba(26, 115, 232, 0.15); }
+  }
+
+  /* Scrollbars inside schedule, slides and modal blocks */
+  .slide::-webkit-scrollbar,
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .slide::-webkit-scrollbar-track,
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .slide::-webkit-scrollbar-thumb,
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 6px;
+  }
+  .slide::-webkit-scrollbar-thumb:hover,
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  /* Custom input slider styling to match cobalt blue */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: #e2e8f0;
+    height: 6px;
+    border-radius: 9999px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #1a73e8;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover {
+    background: #155cb2;
+  }
+
+  /* ===== Poster auto-scroll marquee (Хөтөлбөр харах) ===== */
+  .poster-marquee {
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+            mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+  }
+  .poster-track {
+    display: flex;
+    gap: 1.25rem;
+    width: max-content;
+    animation: poster-scroll 48s linear infinite;
+  }
+  .poster-marquee:hover .poster-track {
+    animation-play-state: paused;
+  }
+  @keyframes poster-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  .poster-card {
+    flex: 0 0 auto;
+    width: 270px;
+    cursor: zoom-in;
+    border-radius: 0.9rem;
+    overflow: hidden;
+    border: 1.5px solid rgba(255,255,255,0.7);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+    background: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .poster-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 18px 40px rgba(26, 115, 232, 0.22);
+  }
+  .poster-card img {
+    width: 100%;
+    display: block;
+  }
+</style>
+</head>
+<body class="antialiased selection:bg-cobalt-100 selection:text-cobalt-600 font-sans overflow-hidden iridescent-bg tech-grid">
+
+<!-- TOP HEADER -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-cobalt-border py-3 px-6 md:px-12 flex justify-between items-center">
+  <div class="flex items-center gap-3">
+    <span class="text-xs text-cobalt-slate font-extrabold tracking-wider uppercase">БИЗНЕСИЙГ СИСТЕМЧЛЭХ СУРГАЛТ</span>
+  </div>
+
+  <div class="flex items-center gap-2.5">
+    <div class="px-2.5 py-0.5 bg-cobalt-50 border border-cobalt-border rounded-md text-[10px] font-mono font-bold text-cobalt-600 hidden sm:block" id="slide-progress-badge">
+      Слайд: 1 / 9
+    </div>
+    <!-- Direct PDF download -->
+    <a href="business-level-up-program.pdf" download
+       class="bg-white hover:bg-cobalt-50 border border-cobalt-200 text-cobalt-700 font-bold text-[11px] px-3 py-1.5 rounded g-transition flex items-center gap-1.5">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"></path></svg>
+      <span class="hidden sm:inline">Хөтөлбөр</span> татах
+    </a>
+    <button onclick="openRegisterModal()"
+       class="bg-cobalt-600 hover:bg-cobalt-700 text-white font-bold text-[11px] px-3.5 py-1.5 rounded g-transition shadow-sm hover:shadow-md">
+      Бүртгүүлэх
+    </button>
+  </div>
+</header>
+
+<!-- TOP PROGRESS LINE -->
+<div class="fixed top-[53px] left-0 right-0 h-[2px] bg-slate-100 z-50">
+  <div id="slide-top-progress" class="h-full bg-cobalt-600 g-transition w-[11.1%]"></div>
+</div>
+
+<!-- SLIDES MAIN FRAME -->
+<div class="relative w-full h-full max-w-6xl mx-auto flex items-center justify-center">
+
+  <!-- SLIDE 1: INTRO / TITLE -->
+  <div class="slide active" id="slide-1">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full py-4">
+      <div class="lg:col-span-7 space-y-6 text-left">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-cobalt-50 text-cobalt-600 text-xs font-bold border border-cobalt-200/50" style="animation: pulse-light 3s infinite alternate ease-in-out;">
+          <span class="w-1.5 h-1.5 rounded-full bg-cobalt-600 animate-pulse"></span>
+          VIP СУРГАЛТ · СЕРТИФИКАТЖУУЛСАН
+        </div>
+
+        <h1 class="animate-el text-4xl md:text-5xl font-black tracking-tight text-cobalt-navy leading-none delay-100">
+          Дижитал хувьсалд<br>
+          <span class="text-cobalt-600 relative">системтэйгээр шилжихүй</span>
+        </h1>
+
+        <p class="animate-el text-sm md:text-base text-cobalt-textGray max-w-xl leading-relaxed delay-200">
+          Байгууллагыг дижиталжуулах мэргэжилтэн бэлтгэх 3 долоо хоногийн эрчимжүүлсэн хөтөлбөр. Онол, семинар болон бодит дижитал дадлага хосолсон системт арга барил (Blended Learning).
+        </p>
+
+        <div class="animate-el flex flex-wrap gap-3 pt-2 delay-300">
+          <!-- Хөтөлбөр харах → jumps to the Хөтөлбөр slide with the auto-scrolling posters -->
+          <button onclick="goToSlide(3)" class="px-5 py-2.5 bg-cobalt-600 hover:bg-cobalt-700 text-white text-xs font-bold rounded-lg g-transition shadow-sm flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5a2 2 0 012-2h12a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V5z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M4 15l4-4 3 3 4-5 5 6"></path></svg>
+            Хөтөлбөр харах
+          </button>
+          <!-- Хөтөлбөр татах → downloads the PDF directly -->
+          <a href="business-level-up-program.pdf" download
+             class="px-5 py-2.5 bg-white hover:bg-cobalt-50 border border-cobalt-200 text-cobalt-700 text-xs font-bold rounded-lg g-transition flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"></path></svg>
+            Хөтөлбөр татах
+          </a>
+          <button onclick="nextSlide()" class="px-5 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 text-cobalt-slate text-xs font-bold rounded-lg g-transition">
+            Слайд үзэх →
+          </button>
+        </div>
+      </div>
+
+      <div class="lg:col-span-5 hidden lg:flex justify-end animate-el delay-400">
+        <div class="w-full max-w-sm p-6 bg-white/80 backdrop-blur-md border border-slate-200 rounded-xl relative overflow-hidden" style="animation: pulse-light 4s infinite alternate ease-in-out;">
+          <div class="absolute inset-0 bg-gradient-to-tr from-cobalt-50/20 via-transparent to-transparent pointer-events-none"></div>
+          <p class="text-[10px] text-cobalt-600 uppercase font-black tracking-widest">Сургалтын хэмжүүр</p>
+          <div class="space-y-4 mt-6">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+              <span class="text-xs text-cobalt-textGray">Онол & Дадлага сэдэв</span>
+              <span class="text-base font-bold text-cobalt-slate">8+ Сэдэв</span>
+            </div>
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+              <span class="text-xs text-cobalt-textGray">Үргэлжлэх хугацаа</span>
+              <span class="text-base font-bold text-cobalt-slate">3 Долоо хоног</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-cobalt-textGray">Төгсөлтийн урамшуулал</span>
+              <button onclick="openComplianceModal()" class="text-xs font-bold text-cobalt-600 bg-cobalt-50 px-2.5 py-1 rounded border border-cobalt-200 hover:bg-cobalt-100 transition-all flex items-center gap-1">
+                <span>3 Сар AI Эрх</span>
+                <span class="text-[9px]">🔍 Үзэх</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: OVERVIEW & SYSTEM RULES -->
+  <div class="slide" id="slide-2">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center w-full py-4">
+      <div class="md:col-span-6 space-y-4 text-left">
+        <span class="animate-el text-xs font-bold text-cobalt-600 uppercase tracking-widest delay-100">01 / Ерөнхий мэдээлэл</span>
+        <h2 class="animate-el text-3xl font-extrabold text-cobalt-navy tracking-tight leading-none delay-100">Сургалтын зохион байгуулалт</h2>
+        <p class="animate-el text-xs md:text-sm text-cobalt-textGray leading-relaxed delay-200">
+          Байгууллагын дунд шатны удирдлагууд болон нийт хэрэглэгчдэд зориулсан энэхүү VIP сургалт нь бодит цаг хугацааны хязгаарлагдмал суудлаар явагдана.
+        </p>
+        <div class="animate-el grid grid-cols-2 gap-4 pt-2 delay-300">
+          <div class="bg-white/80 border border-slate-200 p-4 rounded-lg">
+            <p class="text-[11px] text-cobalt-textGray font-semibold">Байршил:</p>
+            <p class="text-xs font-bold text-cobalt-slate mt-1">Colarado бизнес төв, 302-А</p>
+          </div>
+          <div class="bg-white/80 border border-slate-200 p-4 rounded-lg">
+            <p class="text-[11px] text-cobalt-textGray font-semibold">Эхлэх огноо:</p>
+            <p class="text-xs font-bold text-cobalt-slate mt-1">6-р сарын 13-наас</p>
+          </div>
+        </div>
+        <div class="animate-el p-3.5 bg-white/80 border border-dashed border-slate-200 rounded-lg text-xs text-cobalt-textGray delay-400">
+          <span class="font-bold text-cobalt-600">💻 Шаардлага:</span> "Дижитал дадлага" хичээлүүдэд өөрийн зөөврийн компьютер эсвэл ухаалаг төхөөрөмжтэй ирэх шаардлагатай.
+        </div>
+      </div>
+
+      <div class="md:col-span-6 flex justify-center animate-el delay-400">
+        <div class="w-full max-w-sm bg-white/90 backdrop-blur-md border border-slate-200 rounded-xl p-6 shadow-sm">
+          <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
+            <span class="text-xs font-bold text-cobalt-600 bg-cobalt-50 px-2 py-1 rounded">📋 Идэвхтэй Элсэлт</span>
+            <span class="text-[11px] text-cobalt-textGray">Бямба гараг бүр</span>
+          </div>
+          <div class="space-y-4 text-left">
+            <div class="flex gap-3 items-start">
+              <svg class="w-5 h-5 text-cobalt-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+              <div>
+                <p class="text-xs font-bold text-cobalt-slate">6-р сарын 13-наас 3 долоо хоног</p>
+                <p class="text-[11px] text-cobalt-textGray">Үргэлжлэх хугацаа: 13:30–18:30</p>
+              </div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <svg class="w-5 h-5 text-cobalt-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+              <div>
+                <p class="text-xs font-bold text-cobalt-slate">Хамрах хүрээ</p>
+                <p class="text-[11px] text-cobalt-textGray">Нийт хэрэглэгчид болон байгууллагын дунд шатны удирдлагууд</p>
+              </div>
+            </div>
+          </div>
+
+          <div onclick="openComplianceModal()" class="mt-6 p-4 rounded-lg bg-slate-50 border border-slate-200 hover:border-cobalt-600 hover:shadow-md transition-all cursor-pointer flex flex-col gap-2.5">
+            <div class="flex justify-between items-center w-full">
+              <div class="text-left">
+                <p class="text-[10px] text-cobalt-textGray uppercase font-bold tracking-wider">Сургалтын төлбөр</p>
+                <p class="text-xl font-bold text-cobalt-slate">950,000 ₮</p>
+              </div>
+              <span class="px-2.5 py-1.5 bg-cobalt-600 text-white text-[10px] font-bold rounded-md uppercase flex items-center gap-1 hover:bg-cobalt-700 transition-colors">
+                🎁 Бонустай
+              </span>
+            </div>
+            <p class="text-[10px] text-cobalt-600 font-semibold leading-relaxed border-t border-slate-200/60 pt-2 flex items-center gap-1.5 text-left">
+              <span>👉</span> <span>3-н сарын 1,050,000₮-ны комплаенс аккаунт эрх бэлэглэнэ.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: ХӨТӨЛБӨР — auto-scrolling posters -->
+  <div class="slide" id="slide-3">
+    <div class="w-full space-y-5 text-left py-4">
+      <div class="space-y-2">
+        <span class="animate-el text-xs font-bold text-cobalt-600 uppercase tracking-widest delay-100">02 / Хөтөлбөр</span>
+        <h2 class="animate-el text-2xl md:text-3xl font-extrabold text-cobalt-navy tracking-tight delay-100">Илтгэгчид ба сэдвүүд</h2>
+        <p class="animate-el text-xs md:text-sm text-cobalt-textGray delay-200">
+          Илтгэгч тус бүрийн постерууд автоматаар гүйнэ · хулганаа дээр аваачвал зогсоно · дарж томруулна.
+        </p>
+      </div>
+
+      <div class="animate-el poster-marquee w-full py-2 delay-300">
+        <div class="poster-track" id="poster-track"><!-- rendered by JS --></div>
+      </div>
+
+      <div class="animate-el flex flex-wrap gap-3 pt-1 delay-400">
+        <a href="business-level-up-program.pdf" download
+           class="px-5 py-2.5 bg-cobalt-600 hover:bg-cobalt-700 text-white text-xs font-bold rounded-lg g-transition shadow-sm flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"></path></svg>
+          Бүтэн хөтөлбөр татах (PDF)
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: WEEK 1 DETAILS -->
+  <div class="slide" id="slide-4">
+    <div class="w-full max-w-2xl mx-auto py-4">
+      <div class="space-y-4 text-left">
+        <span class="animate-el text-xs font-bold text-cobalt-600 uppercase tracking-widest delay-100">03 / WEEK 1 ХӨТӨЛБӨР</span>
+        <h2 class="animate-el text-2xl md:text-3xl font-extrabold text-cobalt-navy tracking-tight delay-100">AI эрин үе + Зорилгын систем</h2>
+        <p class="animate-el text-xs md:text-sm text-cobalt-textGray leading-relaxed delay-200">
+          <strong>Огноо:</strong> 6-р сарын 13-ны Бямба гараг<br>
+          Байгууллагынхаа эрхэм зорилгоос жилийн төлөвлөгөө хүртэлх системийг ТОМ-оор харах, AI ашиглаж бүтээмж өсгөх чиг хандлагуудад суралцана.
+        </p>
+        <div class="animate-el p-4 bg-white/80 border border-dashed border-cobalt-200 rounded-lg text-xs text-cobalt-textGray delay-300 leading-relaxed">
+          <strong class="text-cobalt-600 block mb-1">📝 ГЭРИЙН ДААЛГАВАР (06.14-19):</strong>
+          • Байгууллагын нэгдсэн төлөвлөлтийг сайжруулах, жилийн үйл ажиллагааны төлөвлөгөөг удирдан боловсруулах;<br>
+          • Процессыг автоматжуулах дэвшилтэт технологийг үйл ажиллагаанд амжилттай турших;<br>
+          • Олон улсын түвшний стандарт, техникийн нөхцөлүүдийг тодорхойлох.
+        </div>
+        <div class="animate-el pt-1 delay-400">
+          <a href="business-level-up-program.pdf" download class="inline-flex items-center gap-2 text-xs font-bold text-cobalt-600 hover:text-cobalt-700">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"></path></svg>
+            Өдрийн дэлгэрэнгүй хуваарийг хөтөлбөрөөс үзнэ үү →
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: WEEK 2 DETAILS -->
+  <div class="slide" id="slide-5">
+    <div class="w-full max-w-2xl mx-auto py-4">
+      <div class="space-y-4 text-left">
+        <span class="animate-el text-xs font-bold text-cobalt-600 uppercase tracking-widest delay-100">04 / WEEK 2 ХӨТӨЛБӨР</span>
+        <h2 class="animate-el text-2xl md:text-3xl font-extrabold text-cobalt-navy tracking-tight delay-100">Процесс + KPI/OKR тогтолцоо</h2>
+        <p class="animate-el text-xs md:text-sm text-cobalt-textGray leading-relaxed delay-200">
+          <strong>Огноо:</strong> 6-р сарын 20-ны Бямба гараг<br>
+          Процессыг зассанаар зорилгоо биелүүлэх урсгал, BPMN 2.0 стандарт, үр дүнг оновчтой хэмжих KPI, OKR цахимжуулалтын системүүдийг бодитоор угсарна.
+        </p>
+        <div class="animate-el p-4 bg-white/80 border border-dashed border-cobalt-200 rounded-lg text-xs text-cobalt-textGray delay-300 leading-relaxed">
+          <strong class="text-cobalt-600 block mb-1">📝 ГЭРИЙН ДААЛГАВАР (06.21-26):</strong>
+          • Процессоо бүрэн зурж дуусган, програмд ажлын урсгалуудаа оруулах;<br>
+          • Хийгдсэн ажлуудаа зорилготой холбон автоматжуулах.
+        </div>
+        <div class="animate-el pt-1 delay-400">
+          <a href="business-level-up-program.pdf" download class="inline-flex items-center gap-2 text-xs font-bold text-cobalt-600 hover:text-cobalt-700">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"></path></svg>
+            Өдрийн дэлгэрэнгүй хуваарийг хөтөлбөрөөс үзнэ үү →
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: DAY 3 DETAILS -->
+  <div class="slide" id="slide-6">
+    <div class="w-full max-w-2xl mx-auto py-4">
+      <div class="space-y-4 text-left">
+        <span class="animate-el text-xs font-bold text-cobalt-600 uppercase tracking-widest delay-100">05 / WEEK 3 ХӨТӨЛБӨР</span>
+        <h2 class="animate-el text-2xl md:text-3xl font-extrabold text-cobalt-navy tracking-tight delay-100">Журмын системчлэл + AI Комплаенс</h2>
+        <p class="animate-el text-xs md:text-sm text-cobalt-textGray leading-relaxed delay-200">
+          <strong>Огноо:</strong> 6-р сарын 27-ны Бямба гараг<br>
+          Журмыг хэрэгждэг болгох цахимжуулалт, хүний нөөцийн системүүд болон AI ашиглаж эрсдэлийн үнэлгээ, гэрээ шалгах комплаенс суулгана. Өдрийн төгсгөлд сертификат гардуулна.
+        </p>
+        <div class="animate-el p-4 bg-white/80 border border-dashed border-cobalt-200 rounded-lg text-xs text-cobalt-textGray delay-300 leading-relaxed">
+          <strong class="text-cobalt-600 block mb-1">📝 ГЭРИЙН ДААЛГАВАР (06.28 - 07.28):</strong>
+          • Сонгосон стандартын шаардлагуудыг үүсгэж хамаарах баримт бичигт зөрүүний шинжилгээ хийх;<br>
+          • Зөрүүний шинжилгээний дүгнэлтийн дагуу журам, процесс, зорилгоо сайжруулах.
+        </div>
+        <div class="animate-el pt-1 delay-400">
+          <a href="business-level-up-program.pdf" download class="inline-flex items-center gap-2 text-xs font-bold text-cobalt-600 hover:text-cobalt-700">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"></path></svg>
+            Өдрийн дэлгэрэнгүй хуваарийг хөтөлбөрөөс үзнэ үү →
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: INTERACTIVE ROI CALCULATOR -->
+  <div class="slide" id="slide-7">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full py-4 text-left">
+      <div class="lg:col-span-6 space-y-5">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-cobalt-50 text-cobalt-600 text-xs font-bold border border-cobalt-200/50">
+          <span class="w-1.5 h-1.5 rounded-full bg-cobalt-600 animate-pulse"></span>
+          БОДИТ ХӨРӨНГӨ ОРУУЛАЛТ & ӨГӨӨЖ
+        </div>
+
+        <div class="p-6 bg-gradient-to-br from-cobalt-600 to-cobalt-900 rounded-2xl text-white shadow-lg space-y-4">
+          <p class="text-[10px] text-cobalt-200 uppercase font-bold tracking-widest">Сургалтын онцлох үнэ цэнэ</p>
+          <h2 class="text-3xl md:text-4xl font-black leading-none">
+            <span class="text-white">950,000 ₮</span><br>
+            <span class="text-cobalt-100 text-base font-medium tracking-normal normal-case">сургалтанд сууснаар...</span>
+          </h2>
+          <p class="text-xs text-cobalt-100 leading-relaxed border-t border-white/20 pt-3">
+            Танай байгууллагад очих <span class="font-bold border-b border-cobalt-200">бодит үр дүн, бүтээмжийн өсөлт:</span>
+          </p>
+          <ul class="space-y-3.5 text-[11px] leading-relaxed">
+            <li class="flex items-start gap-2.5">
+              <span class="text-cobalt-200 text-xs">🎁</span>
+              <div>
+                <strong>1.1x ШУУД ӨГӨӨЖ:</strong> 1,050,000₮-ний үнэтэй AI комплаенс аккаунт 3 сар үнэгүй ашиглах эрх дагалдана.
+              </div>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-cobalt-200 text-xs">⏱️</span>
+              <div>
+                <strong>10x БҮТЭЭМЖИЙН ӨСӨЛТ:</strong> Сар бүр 40+ ажлын цагийг системээр автоматжуулж, гар ажиллагааг хэмнэнэ.
+              </div>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-cobalt-200 text-xs">🛡️</span>
+              <div>
+                <strong>-35% ХҮНИЙ АЛДАА:</strong> Ирц, журам, комплаенсыг системжүүлж гүйцэтгэлийн сул талуудыг арилгана.
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lg:col-span-6 space-y-4">
+        <div class="bg-white/90 backdrop-blur-md border border-slate-200 rounded-xl p-5 shadow-sm space-y-5 relative overflow-hidden" style="animation: pulse-light 4s infinite alternate ease-in-out;">
+          <div class="absolute inset-0 bg-gradient-to-tr from-cobalt-50/20 via-transparent to-transparent pointer-events-none"></div>
+
+          <div class="flex justify-between items-center border-b border-slate-100 pb-2.5">
+            <span class="text-xs font-bold text-cobalt-600">📊 Бүтээмжийн өгөөж тооцоолуур</span>
+            <span class="text-[9px] font-mono text-cobalt-textGray">ROI Calculator</span>
+          </div>
+
+          <div class="space-y-3.5">
+            <div class="space-y-1">
+              <div class="flex justify-between text-[11px] font-bold text-cobalt-slate">
+                <span>Ажилтны тоо:</span>
+                <span id="val-emp-count" class="text-cobalt-600">10 ажилтан</span>
+              </div>
+              <input id="calc-emp-count" type="range" min="1" max="100" value="10" class="w-full" oninput="calculateROI()">
+            </div>
+
+            <div class="space-y-1">
+              <div class="flex justify-between text-[11px] font-bold text-cobalt-slate">
+                <span>Ажилтны дундаж цалин:</span>
+                <span id="val-salary" class="text-cobalt-600">2.0 сая ₮</span>
+              </div>
+              <input id="calc-salary" type="range" min="1000000" max="5000000" step="200000" value="2000000" class="w-full" oninput="calculateROI()">
+            </div>
+
+            <div class="space-y-1">
+              <div class="flex justify-between text-[11px] font-bold text-cobalt-slate">
+                <span>Гар аргаар үрдэг хугацаа (7 хоногт/ажилтан):</span>
+                <span id="val-hours" class="text-cobalt-600">5 цаг</span>
+              </div>
+              <input id="calc-hours" type="range" min="2" max="20" value="5" class="w-full" oninput="calculateROI()">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 border-t border-slate-100 pt-3 text-left">
+            <div class="p-3 bg-slate-50 border border-slate-100 rounded-lg">
+              <p class="text-[9px] text-cobalt-textGray uppercase font-bold tracking-wider">Сар бүр хэмнэх</p>
+              <p id="res-monthly-savings" class="text-lg font-black text-cobalt-slate mt-0.5">375,000 ₮</p>
+            </div>
+
+            <div class="p-3 bg-slate-50 border border-slate-100 rounded-lg">
+              <p class="text-[9px] text-cobalt-textGray uppercase font-bold tracking-wider">Жилд хэмнэх</p>
+              <p id="res-annual-savings" class="text-lg font-black text-cobalt-slate mt-0.5">4,500,000 ₮</p>
+            </div>
+          </div>
+
+          <div class="p-3 bg-cobalt-50 border border-cobalt-200 rounded-lg flex justify-between items-center text-left">
+            <p class="text-[10px] text-cobalt-textGray font-medium">950,000 ₮ хөрөнгө оруулалтыг нугалах харьцаа (ROI):</p>
+            <div class="text-right shrink-0">
+              <span id="res-roi-ratio" class="text-2xl font-black text-cobalt-600 block">4.7x</span>
+              <span class="text-[9px] font-bold text-cobalt-700">дахин өндөр!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: BENEFITS -->
+  <div class="slide" id="slide-8">
+    <div class="w-full space-y-6 text-left py-4">
+      <div class="space-y-2">
+        <span class="animate-el text-xs font-bold text-cobalt-600 uppercase tracking-widest delay-100">07 / СУРГАЛТЫН ДАВУУ ТАЛ</span>
+        <h2 class="animate-el text-2xl md:text-3xl font-extrabold text-cobalt-navy tracking-tight delay-100">Таны эзэмших бодит практик ур чадварууд</h2>
+      </div>
+
+      <div class="animate-el grid grid-cols-1 md:grid-cols-2 gap-4 delay-200">
+        <div class="flex gap-3 p-4 bg-white/95 border border-slate-200 rounded-lg">
+          <span class="w-5 h-5 rounded-full bg-cobalt-50 text-cobalt-600 flex items-center justify-center text-[10px] font-bold mt-0.5 shrink-0">✓</span>
+          <div>
+            <h4 class="text-xs font-bold text-cobalt-slate">Үйл ажиллагааг PDCA циклээр автоматжуулах</h4>
+            <p class="text-[11px] text-cobalt-textGray mt-0.5">Ямар ч төрлийн үйл ажиллагааг төлөвлөх, хэрэгжүүлэх, хянах, сайжруулах дижитал шийдэл боловсруулах.</p>
+          </div>
+        </div>
+
+        <div class="flex gap-3 p-4 bg-white/95 border border-slate-200 rounded-lg">
+          <span class="w-5 h-5 rounded-full bg-cobalt-50 text-cobalt-600 flex items-center justify-center text-[10px] font-bold mt-0.5 shrink-0">✓</span>
+          <div>
+            <h4 class="text-xs font-bold text-cobalt-slate">Датаг цэгцтэй чанартай ангилах</h4>
+            <p class="text-[11px] text-cobalt-textGray mt-0.5">Байгууллагын үйл ажиллагааны бүхий л датаг системтэй бүртгэж, удирдан ашиглаж сурах.</p>
+          </div>
+        </div>
+
+        <div class="flex gap-3 p-4 bg-white/95 border border-slate-200 rounded-lg">
+          <span class="w-5 h-5 rounded-full bg-cobalt-50 text-cobalt-600 flex items-center justify-center text-[10px] font-bold mt-0.5 shrink-0">✓</span>
+          <div>
+            <h4 class="text-xs font-bold text-cobalt-slate">Олон улсын стандарт хэрэгжүүлэх практик</h4>
+            <p class="text-[11px] text-cobalt-textGray mt-0.5">Хоосон онол, дүрэм журам биш, бодитоор хэрэгждэг системийн давуу талыг хэвшүүлэх.</p>
+          </div>
+        </div>
+
+        <div class="flex gap-3 p-4 bg-white/95 border border-slate-200 rounded-lg">
+          <span class="w-5 h-5 rounded-full bg-cobalt-50 text-cobalt-600 flex items-center justify-center text-[10px] font-bold mt-0.5 shrink-0">✓</span>
+          <div>
+            <h4 class="text-xs font-bold text-cobalt-slate">Мэргэшсэн мэргэжилтнүүдийн зааварчилгаа</h4>
+            <p class="text-[11px] text-cobalt-textGray mt-0.5">Нийт 8 сэдвийн хүрээнд салбарын зөвлөхүүдтэй хамт бодит өгөгдөл дээр дадлагажих.</p>
+          </div>
+        </div>
+      </div>
+
+      <div onclick="openComplianceModal()" class="animate-el p-4 rounded-lg bg-cobalt-50 border border-cobalt-200 hover:border-cobalt-600 hover:shadow-lg transition-all cursor-pointer flex flex-col md:flex-row justify-between items-center gap-4 delay-300">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl shrink-0">🎁</span>
+          <div class="text-left">
+            <h4 class="text-xs font-bold text-cobalt-slate">tuss.io AI Комплаенс Багц эрх</h4>
+            <p class="text-[11px] text-cobalt-textGray mt-0.5">
+              Оролцогч бүрд <strong class="text-cobalt-600">3-н сарын 1,050,000₮-ны комплаенс аккаунт эрх бэлэглэнэ</strong>. (Энд дарж програм дээр хийж болох үйлдлүүдтэй танилцана уу)
+            </p>
+          </div>
+        </div>
+        <span class="text-[10px] font-bold text-white bg-cobalt-600 hover:bg-cobalt-700 px-4 py-2 rounded-md uppercase shrink-0 transition-all shadow-sm">
+          Шинжилгээнүүд харах
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: INTERACTIVE DIAGNOSTIC TEST -->
+  <div class="slide" id="slide-9">
+    <div class="w-full max-w-3xl mx-auto text-center py-4">
+
+      <div id="quiz-wrapper" class="bg-white/95 backdrop-blur-md border border-slate-200 rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden text-left space-y-6">
+        <div class="absolute inset-0 bg-gradient-to-tr from-cobalt-50/20 via-transparent to-transparent pointer-events-none"></div>
+
+        <div id="quiz-view-start" class="space-y-5">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-cobalt-50 text-cobalt-600 text-xs font-bold border border-cobalt-200/50">
+            <span>📊 БЭЛЭН БАЙДЛЫН ОНОШИЛГОО</span>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-black text-cobalt-navy leading-none">Танай байгууллага дижиталд шилжихэд бэлэн үү?</h2>
+          <p class="text-xs md:text-sm text-cobalt-textGray leading-relaxed">
+            Байгууллагынхаа төлөвлөлт, процесс, гүйцэтгэл, баримт бичиг болон комплаенсийн өнөөгийн түвшнийг тодорхойлох 5 асуулт бүхий хурдан оношилгоог бөглөөд бодит үнэлгээ, зөвлөмжийг аваарай.
+          </p>
+          <button onclick="startQuiz()" class="px-6 py-3 bg-cobalt-600 hover:bg-cobalt-700 text-white font-bold text-xs rounded-lg shadow-md transition-all">
+            Оношилгоо эхлэх ➔
+          </button>
+        </div>
+
+        <div id="quiz-view-play" class="hidden space-y-5">
+          <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+            <span id="quiz-progress-text" class="text-xs font-bold text-cobalt-600 uppercase">Алхам 1 / 5</span>
+            <div class="w-24 bg-slate-100 h-1.5 rounded-full overflow-hidden">
+              <div id="quiz-progress-bar" class="bg-cobalt-600 h-full g-transition" style="width: 20%;"></div>
+            </div>
+          </div>
+
+          <h3 id="quiz-question-title" class="text-sm md:text-base font-bold text-cobalt-slate leading-snug">Асуулт уншиж байна...</h3>
+
+          <div id="quiz-options" class="flex flex-col gap-2.5"></div>
+        </div>
+
+        <div id="quiz-view-result" class="hidden space-y-5">
+          <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <span class="text-3xl">📋</span>
+            <div>
+              <h3 class="text-base font-black text-cobalt-slate leading-none">Оношилгооны хариу</h3>
+              <p class="text-[10px] text-cobalt-textGray font-semibold mt-1">Танай байгууллагын бэлэн байдлын оношилгоо дууслаа</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+            <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg text-center space-y-1 shrink-0">
+              <p class="text-[9px] text-cobalt-textGray uppercase font-bold tracking-wider">Нийт оноо</p>
+              <p id="quiz-score-val" class="text-3xl font-black text-cobalt-600">7 / 10</p>
+              <span id="quiz-score-badge" class="inline-block text-[9px] font-bold text-cobalt-700 bg-cobalt-100 px-2 py-0.5 rounded">Дунд түвшин</span>
+            </div>
+
+            <div class="md:col-span-2 text-left space-y-1">
+              <h4 class="text-xs font-bold text-cobalt-slate uppercase tracking-wider">Оношилгооны зөвлөмж:</h4>
+              <p id="quiz-result-feedback" class="text-xs text-cobalt-textGray leading-relaxed">Тайлбар ачаалж байна...</p>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-lg bg-cobalt-50 border border-cobalt-200 flex flex-col md:flex-row justify-between items-center gap-3 text-left">
+            <div class="space-y-0.5">
+              <h4 class="text-xs font-bold text-cobalt-slate">Сургалтанд сууж бүтээмжээ 10х өсгөе!</h4>
+              <p class="text-[10px] text-cobalt-textGray">Бүртгүүлээд 1,050,000₮ үнэтэй AI комплаенс 3 сарын эрхийг бэлгэнд аваарай.</p>
+            </div>
+            <div class="flex gap-2 shrink-0">
+              <button onclick="resetQuiz()" class="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-cobalt-slate text-[11px] font-bold rounded-lg transition-all">
+                Дахин бөглөх
+              </button>
+              <button onclick="openRegisterModal()"
+                 class="px-5 py-2 bg-cobalt-600 hover:bg-cobalt-700 text-white text-[11px] font-bold rounded-lg shadow-sm transition-all flex items-center gap-1.5">
+                <span>Одоо бүртгүүлэх</span> <span>➔</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM SLIDE NAVIGATOR TIMELINE -->
+<footer class="fixed bottom-0 left-0 right-0 z-40 bg-[#bde6fd] border-t border-sky-200 py-3.5 px-6 md:px-12 flex justify-between items-center select-none shadow-inner">
+  <div class="flex items-center gap-3">
+    <button onclick="prevSlide()" class="w-8 h-8 rounded-full bg-white/80 hover:bg-white text-cobalt-slate flex items-center justify-center text-xs g-transition shadow-sm" title="Өмнөх">◀</button>
+    <button onclick="nextSlide()" class="w-8 h-8 rounded-full bg-white/80 hover:bg-white text-cobalt-slate flex items-center justify-center text-xs g-transition shadow-sm" title="Дараах">▶</button>
+  </div>
+
+  <div class="hidden lg:flex items-center gap-1 max-w-4xl overflow-x-auto text-[10px] font-bold text-cobalt-900">
+    <span onclick="goToSlide(1)" id="dot-1" class="px-2 py-1.5 rounded-md cursor-pointer bg-white text-cobalt-900 font-bold g-transition shadow-sm">01. Нүүр</span>
+    <span class="text-slate-300">/</span>
+    <span onclick="goToSlide(2)" id="dot-2" class="px-2 py-1.5 rounded-md cursor-pointer hover:bg-white/60 g-transition">02. Зохион байгуулалт</span>
+    <span class="text-slate-300">/</span>
+    <span onclick="goToSlide(3)" id="dot-3" class="px-2 py-1.5 rounded-md cursor-pointer hover:bg-white/60 g-transition">03. Хөтөлбөр</span>
+    <span class="text-slate-300">/</span>
+    <span onclick="goToSlide(4)" id="dot-4" class="px-2 py-1.5 rounded-md cursor-pointer hover:bg-white/60 g-transition">04. WEEK 1</span>
+    <span class="text-slate-300">/</span>
+    <span onclick="goToSlide(5)" id="dot-5" class="px-2 py-1.5 rounded-md cursor-pointer hover:bg-white/60 g-transition">05. WEEK 2</span>
+    <span class="text-slate-300">/</span>
+    <span onclick="goToSlide(6)" id="dot-6" class="px-2 py-1.5 rounded-md cursor-pointer hover:bg-white/60 g-transition">06. WEEK 3</span>
+    <span class="text-slate-300">/</span>
+    <span onclick="goToSlide(7)" id="dot-7" class="px-2 py-1.5 rounded-md cursor-pointer hover:bg-white/60 g-transition">07. Үр дүнгийн тооцоолуур</span>
+    <span class="text-slate-300">/</span>
+    <span onclick="goToSlide(8)" id="dot-8" class="px-2 py-1.5 rounded-md cursor-pointer hover:bg-white/60 g-transition">08. Давуу тал</span>
+    <span class="text-slate-300">/</span>
+    <span onclick="goToSlide(9)" id="dot-9" class="px-2 py-1.5 rounded-md cursor-pointer hover:bg-white/60 g-transition">09. Оношилгоо тест</span>
+  </div>
+
+  <div class="flex items-center gap-4">
+    <div class="text-right leading-none hidden sm:block">
+      <span class="text-[9px] font-bold text-cobalt-700 tracking-widest block">ДАРААГИЙН ТҮВШНИЙ ЛИДЕР БЭЛТГЭХ</span>
+      <span class="text-sm font-black text-white tracking-wider font-mono">BUSINESS LEVEL UP</span>
+    </div>
+    <div class="w-8 h-8 bg-white p-0.5 rounded shadow-sm flex items-center justify-center shrink-0">
+      <svg class="w-7 h-7 text-cobalt-900" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm8-2h6v6h-6V3zm2 2v2h2V5h-2zM3 15h6v6H3v-6zm2 2v2h2v-2H5zm10-2h2v2h-2v-2zm2 2h2v2h-2v-2zm-2 2h2v2h-2v-2zm-2-2h2v2h-2v-2zm4-4h2v2h-2v-2zm-2 2h2v2h-2v-2zm-2-4h2v2h-2v-2zm4 0h2v2h-2v-2zm-6 4h2v2h-2v-2z"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="flex lg:hidden items-center gap-1.5" id="mobile-dots"></div>
+</footer>
+
+<!-- ===== REGISTRATION MODAL (бүртгэл → Google Sheet) ===== -->
+<div id="register-modal" onclick="if(event.target === this) closeRegisterModal()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[65] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 p-4">
+  <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-xl shadow-2xl scale-95 transition-all duration-300 relative max-h-[90vh] flex flex-col">
+    <!-- Close -->
+    <button onclick="closeRegisterModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors z-10" title="Хаах">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+    </button>
+
+    <div class="overflow-y-auto custom-scrollbar p-6 md:p-7">
+      <!-- FORM VIEW -->
+      <div id="register-form-view" class="space-y-4">
+        <div class="border-b border-slate-100 pb-3">
+          <h3 class="text-lg font-black text-cobalt-navy flex items-center gap-2">Сургалтын бүртгэл баталгаажуулах хуудас <span>🎉</span></h3>
+          <p class="text-xs text-cobalt-textGray mt-1.5 leading-relaxed">
+            Сайн уу! Эрч хүчтэй залуусаа 🔥 Сургалтандаа бүртгүүлж, ирээдүйнхээ том хөрөнгө оруулалтыг хийж байгаад баяр хүргэе! 🌟
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-bold text-cobalt-slate flex items-center gap-1">Таны бүтэн нэр <span>👤</span> <span class="text-rose-500">*</span></label>
+            <input id="reg-name" type="text" placeholder="Нэрээ энд оруулна уу..." class="mt-1.5 w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-cobalt-600 focus:ring-1 focus:ring-cobalt-600">
+          </div>
+          <div>
+            <label class="text-xs font-bold text-cobalt-slate flex items-center gap-1">Холбоо барих утас <span>📞</span> <span class="text-rose-500">*</span></label>
+            <input id="reg-phone" type="tel" inputmode="numeric" placeholder="Утасны дугаараа оруулна уу" class="mt-1.5 w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-cobalt-600 focus:ring-1 focus:ring-cobalt-600">
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs font-bold text-cobalt-slate flex items-center gap-1">Цахим шуудан (Имэйл) <span>📧</span> <span class="text-rose-500">*</span></label>
+          <input id="reg-email" type="email" placeholder="example@domain.com" class="mt-1.5 w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-cobalt-600 focus:ring-1 focus:ring-cobalt-600">
+        </div>
+
+        <div>
+          <label class="text-xs font-bold text-cobalt-slate">Сургалтаас хүлээж буй таны гол зорилго юу вэ?</label>
+          <textarea id="reg-goal" rows="3" placeholder="Энд бичээрэй..." class="mt-1.5 w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-cobalt-600 focus:ring-1 focus:ring-cobalt-600 resize-none"></textarea>
+        </div>
+
+        <!-- Honeypot (anti-spam, hidden from humans) -->
+        <input id="reg-company" type="text" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true">
+
+        <!-- Payment info -->
+        <div class="bg-cobalt-50 border border-cobalt-200 rounded-lg p-4 space-y-2">
+          <p class="text-xs font-black text-cobalt-navy uppercase tracking-wide">💳 Төлбөрийн мэдээлэл</p>
+          <div class="text-[11px] text-cobalt-slate space-y-1">
+            <div class="flex justify-between gap-2"><span class="text-cobalt-textGray">Банк:</span><span class="font-bold">Худалдаа Хөгжлийн Банк</span></div>
+            <div class="flex justify-between gap-2 items-center">
+              <span class="text-cobalt-textGray">Дансны дугаар:</span>
+              <span class="font-bold flex items-center gap-1.5">
+                <span id="reg-account">MN11 0004000 460018478</span>
+                <button onclick="copyAccount()" class="text-cobalt-600 hover:text-cobalt-700" title="Хуулах">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                </button>
+              </span>
+            </div>
+            <div class="flex justify-between gap-2"><span class="text-cobalt-textGray">Төлбөрийн дүн:</span><span class="font-black text-cobalt-600">950,000₮</span></div>
+          </div>
+          <p class="text-[10px] text-cobalt-textGray leading-relaxed border-t border-cobalt-200/60 pt-2">
+            ⚠️ Санамж: Төлбөр шилжүүлэхдээ гүйлгээний утга дээр өөрийн <strong>утасны дугаараа</strong> заавал бичээрэй! ✨
+          </p>
+        </div>
+
+        <p id="reg-error" class="hidden text-xs font-semibold text-rose-600"></p>
+
+        <button id="reg-submit-btn" onclick="submitRegister()" class="w-full py-3 bg-cobalt-600 hover:bg-cobalt-700 text-white font-bold text-sm rounded-lg shadow-sm transition-all flex items-center justify-center gap-2">
+          <span id="reg-submit-label">Бүртгэлээ илгээх</span>
+        </button>
+
+        <p class="text-[10px] text-center text-cobalt-textGray">
+          tuss.io-н албан ёсны формоор бүртгүүлэхийг хүсвэл
+          <a href="https://new.tuss.io/form/form-detail/aW5mb19iYXNlX2lkPTM4NTA2Jmxhbmd1YWdlPWVuJmxvZ289aHR0cHM6Ly9iYXNlLWFwaS50dXNzLmlvL21lZGlhL29yZ19sb2dvL01qWXdNVEkzTURJek9EVTNNelF5Tnprdy53ZWJw" target="_blank" class="text-cobalt-600 font-bold underline">энд дарна уу</a>.
+        </p>
+      </div>
+
+      <!-- SUCCESS VIEW -->
+      <div id="register-success-view" class="hidden text-center space-y-4 py-6">
+        <div class="w-16 h-16 mx-auto rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+          <svg class="w-9 h-9" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+        </div>
+        <h3 class="text-lg font-black text-cobalt-navy">Бүртгэл амжилттай илгээгдлээ! 🎉</h3>
+        <p class="text-xs text-cobalt-textGray leading-relaxed max-w-sm mx-auto">
+          Таны мэдээллийг хүлээн авлаа. Төлбөрөө шилжүүлсний дараа таны суудал баталгаажих бөгөөд бид тантай удахгүй холбогдоно.
+        </p>
+        <button onclick="closeRegisterModal()" class="px-6 py-2.5 bg-cobalt-600 hover:bg-cobalt-700 text-white font-bold text-xs rounded-lg transition-all">Хаах</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox for enlarging a single poster -->
+<div id="poster-lightbox" onclick="closeLightbox()" class="fixed inset-0 bg-slate-950/85 z-[70] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 p-4 cursor-zoom-out">
+  <img id="poster-lightbox-img" src="" alt="Постер" class="max-h-[90vh] max-w-[92vw] rounded-xl shadow-2xl">
+</div>
+
+<!-- INTERACTIVE COMPLIANCE ACTIONS MODAL -->
+<div id="compliance-modal" onclick="if(event.target === this) closeComplianceModal()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
+  <div class="bg-white/95 border border-slate-200 rounded-2xl w-full max-w-3xl p-6 md:p-8 shadow-2xl scale-95 transition-all duration-300 relative mx-4 max-h-[85vh] flex flex-col">
+    <button onclick="closeComplianceModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition-colors" title="Хаах">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+    </button>
+
+    <div class="mb-5 flex items-start gap-4 border-b border-slate-100 pb-4">
+      <span class="text-3xl">🛡️</span>
+      <div class="text-left">
+        <h3 class="text-lg font-black text-cobalt-navy">Програм дээр хийж болох Комплаенс үйлдлүүд</h3>
+        <p class="text-xs text-cobalt-textGray font-semibold mt-1">
+          Сургалтад оролцсноор урамшуулал болгон авах 3 сарын 1,050,000₮-ны комплаенс аккаунт эрхээр дараах нарийн шинжилгээ, үйлдлүүдийг хийж сурна:
+        </p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 overflow-y-auto pr-2 custom-scrollbar flex-1 pb-4 text-left">
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg hover:border-cobalt-600 hover:bg-cobalt-50/20 transition-all flex items-start gap-3">
+        <span class="text-cobalt-600 mt-0.5 shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg></span>
+        <div><h4 class="text-xs font-bold text-cobalt-slate">Зөрүүний шинжилгээ</h4><p class="text-[10px] text-cobalt-textGray mt-0.5 leading-relaxed">Загвар, стандартын шаардлага болон бодит үйл ажиллагааны зөрүүг тодорхойлно.</p></div>
+      </div>
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg hover:border-cobalt-600 hover:bg-cobalt-50/20 transition-all flex items-start gap-3">
+        <span class="text-cobalt-600 mt-0.5 shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg></span>
+        <div><h4 class="text-xs font-bold text-cobalt-slate">Хүний эрхийн шинжилгээ</h4><p class="text-[10px] text-cobalt-textGray mt-0.5 leading-relaxed">Үйл ажиллагааны урсгал болон дотоод журмын хүний эрхэд нийцсэн байдлыг шалгана.</p></div>
+      </div>
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg hover:border-cobalt-600 hover:bg-cobalt-50/20 transition-all flex items-start gap-3">
+        <span class="text-cobalt-600 mt-0.5 shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg></span>
+        <div><h4 class="text-xs font-bold text-cobalt-slate">Чанарын шинжилгээ</h4><p class="text-[10px] text-cobalt-textGray mt-0.5 leading-relaxed">Баримт бичиг болон журмын стандарт, чанарын түвшинг нарийн үнэлнэ.</p></div>
+      </div>
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg hover:border-cobalt-600 hover:bg-cobalt-50/20 transition-all flex items-start gap-3">
+        <span class="text-cobalt-600 mt-0.5 shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg></span>
+        <div><h4 class="text-xs font-bold text-cobalt-slate">Нийцлийн шинжилгээ</h4><p class="text-[10px] text-cobalt-textGray mt-0.5 leading-relaxed">Хууль тогтоомж, дүрэм журмын нийцлийг автоматаар уншиж оношилно.</p></div>
+      </div>
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg hover:border-cobalt-600 hover:bg-cobalt-50/20 transition-all flex items-start gap-3">
+        <span class="text-cobalt-600 mt-0.5 shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg></span>
+        <div><h4 class="text-xs font-bold text-cobalt-slate">Ялгааг шинжлэх</h4><p class="text-[10px] text-cobalt-textGray mt-0.5 leading-relaxed">Системийн бодит гүйцэтгэл болон төлөвлөсөн урсгал хоорондын ялгааг илрүүлнэ.</p></div>
+      </div>
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg hover:border-cobalt-600 hover:bg-cobalt-50/20 transition-all flex items-start gap-3">
+        <span class="text-cobalt-600 mt-0.5 shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg></span>
+        <div><h4 class="text-xs font-bold text-cobalt-slate">Нөлөөллийн шинжилгээ</h4><p class="text-[10px] text-cobalt-textGray mt-0.5 leading-relaxed">Өөрчлөлт, шинэчлэлт нь бусад систем болон үйл ажиллагаанд хэрхэн нөлөөлөхийг тооцно.</p></div>
+      </div>
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg hover:border-cobalt-600 hover:bg-cobalt-50/20 transition-all flex items-start gap-3">
+        <span class="text-cobalt-600 mt-0.5 shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg></span>
+        <div><h4 class="text-xs font-bold text-cobalt-slate">Гэрээний эрсдэлийн шинжилгээ</h4><p class="text-[10px] text-cobalt-textGray mt-0.5 leading-relaxed">Гэрээний заалтуудын хуулийн болон үйл ажиллагааны далд эрсдэлүүдийг үнэлнэ.</p></div>
+      </div>
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg hover:border-cobalt-600 hover:bg-cobalt-50/20 transition-all flex items-start gap-3">
+        <span class="text-cobalt-600 mt-0.5 shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg></span>
+        <div><h4 class="text-xs font-bold text-cobalt-slate">Процессын болон журмын эрсдлүүд</h4><p class="text-[10px] text-cobalt-textGray mt-0.5 leading-relaxed">Үйл ажиллагааны урсгал дахь сул тал, эрсдэлтэй алхмуудыг тодорхойлно.</p></div>
+      </div>
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg hover:border-cobalt-600 hover:bg-cobalt-50/20 transition-all flex items-start gap-3">
+        <span class="text-cobalt-600 mt-0.5 shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg></span>
+        <div><h4 class="text-xs font-bold text-cobalt-slate">AI журам үүсгэх</h4><p class="text-[10px] text-cobalt-textGray mt-0.5 leading-relaxed">Хиймэл оюуны тусламжтайгаар стандартад нийцсэн шинэ дүрэм журам төсөллөнө.</p></div>
+      </div>
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg hover:border-cobalt-600 hover:bg-cobalt-50/20 transition-all flex items-start gap-3">
+        <span class="text-cobalt-600 mt-0.5 shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg></span>
+        <div><h4 class="text-xs font-bold text-cobalt-slate">AI журам хоорондын нөлөө</h4><p class="text-[10px] text-cobalt-textGray mt-0.5 leading-relaxed">Байгууллагын дүрэм журам хоорондын уялдаа холбоо, зөрүүг AI-аар шинжилнэ.</p></div>
+      </div>
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg hover:border-cobalt-600 hover:bg-cobalt-50/20 transition-all flex items-start gap-3">
+        <span class="text-cobalt-600 mt-0.5 shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg></span>
+        <div><h4 class="text-xs font-bold text-cobalt-slate">AI процесс хоорондын нөлөө</h4><p class="text-[10px] text-cobalt-textGray mt-0.5 leading-relaxed">Бие даасан процессууд хоорондын харилцан хамаарал, нөлөөллийг AI-аар үнэлнэ.</p></div>
+      </div>
+    </div>
+
+    <div class="mt-4 pt-4 border-t border-slate-100 flex justify-between items-center">
+      <span class="text-[10px] text-cobalt-textGray font-mono">Системийн шийдэл: tuss.io Compliance</span>
+      <button onclick="closeComplianceModal()" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition-colors">Хаах</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Global State
+  let currentSlide = 1;
+  const totalSlides = 9;
+  let touchStartX = 0;
+  let touchEndX = 0;
+  let lightboxOpen = false;
+
+  // ⬇️ ЭНД өөрийн Google Apps Script-ийн Web App URL-ийг тавина уу (доорх README / .gs файлыг үзнэ үү).
+  // Хоосон үед бүртгэл илгээгдэхгүй зөвхөн анхааруулга өгнө.
+  const SHEET_ENDPOINT = "";
+
+  // Poster data in program chronological order
+  const posters = [
+    { src: "posters/01-jargalsaikhan.jpg",          name: "Д. Жаргалсайхан", topic: "Зорилгоо том-оор харъя" },
+    { src: "posters/02-aminzul.jpg",                 name: "Д. Аминзул",       topic: "Олон улсын зах зээлд нэвтрэх гүүр" },
+    { src: "posters/03-batdorj.jpg",                 name: "Ж. Батдорж",       topic: "AI ашиглан бүтээмжээ өсгөх нь" },
+    { src: "posters/04-munkhzul.jpg",                name: "Ц. Мөнхзул",       topic: "Процессоо зассанаар зорилгоо хурдан биелүүлнэ" },
+    { src: "posters/05-bayartsengel-kpi.jpg",        name: "Б. Баярцэнгэл",    topic: "Зорилгын хэрэгжилт, үр дүнг оновчтой хэмжих нь" },
+    { src: "posters/06-oyu-erdene.jpg",              name: "Ч. Оюу-эрдэнэ",    topic: "Журмаа системжүүлж амьд болгох нь" },
+    { src: "posters/07-bayartsengel-compliance.jpg", name: "Б. Баярцэнгэл",    topic: "Комплаенсын дараагийн түвшин" }
+  ];
+
+  // 5-step diagnostic quiz state and data
+  let quizCurrentStep = 0;
+  let quizScore = 0;
+
+  const quizQuestions = [
+    {
+      question: "1.  Байгууллагын зорилго, төлөвлөлт хэрхэн хийгддэг вэ?",
+      options: [
+        { text: "А. Зөвхөн удирдлагын толгойд эсвэл цаасан дээр байдаг, уялдаа сул.", score: 0 },
+        { text: "Б. Жилийн төлөвлөгөө гаргадаг ч өдөр тутмын ажилтай сайн холбогддоггүй.", score: 1 },
+        { text: "В. Эрхэм зорилгоос эхлээд өдөр тутмын ажил хүртэл системтэй задлан төлөвлөдөг.", score: 2 }
+      ]
+    },
+    {
+      question: "2. Үйл ажиллагааны дүрэм журам, процессууд хэрхэн хэрэгждэг вэ?",
+      options: [
+        { text: "А. Журам байдаг ч зөвхөн цаасан дээр, амьдрал дээр мөрдөгддөггүй.", score: 0 },
+        { text: "Б. Процессыг зурж тодорхойлсон ч хяналт болон автоматжуулалт сул.", score: 1 },
+        { text: "В. Бүх процесс програм дээр ажлын урсгал (workflow) болж автоматаар хянагддаг.", score: 2 }
+      ]
+    },
+    {
+      question: "3. Ажилтнуудын гүйцэтгэл (KPI / OKR) хэрхэн хэмжигддэг вэ?",
+      options: [
+        { text: "А. Хэмждэггүй эсвэл зөвхөн ажилтныг дарамтлах зорилгоор сар бүр ашигладаг.", score: 0 },
+        { text: "Б. Сар бүр тайлан авдаг ч үр дүнг оношлох, сайжруулахад ашиглаж чаддаггүй.", score: 1 },
+        { text: "В. Зорилго, процессоор заагдсан шалгуураар автоматаар бодит цагт оношлогддог.", score: 2 }
+      ]
+    },
+    {
+      question: "4. Баримт бичиг болон мэдээллийн урсгал хэрхэн шийдэгдсэн бэ?",
+      options: [
+        { text: "А. Бүх зүйл цаасаар эсвэл хувийн чатаар замбараагүй явдаг.", score: 0 },
+        { text: "Б. Cloud хавтас ашигладаг ч уялдаа холбоо, зөвшөөрлийн урсгал тодорхойгүй.", score: 1 },
+        { text: "В. Баримт бичгийн систем (DMS) болон хүний нөөцийн системүүд уялдаатай ажилладаг.", score: 2 }
+      ]
+    },
+    {
+      question: "5. Комплаенс болон эрсдэлийн хяналт хэрхэн хийгддэг вэ?",
+      options: [
+        { text: "А. Шаардлага гарвал зөрүүний шинжилгээг гараар хийдэг, эрсдэлийг тооцдоггүй.", score: 0 },
+        { text: "Б. Стандартуудыг мэддэг ч өдөр тутмын ажилд хянах нь хүндрэлтэй.", score: 1 },
+        { text: "В. AI ашиглан гэрээ, журам, процессын зөрүү, эрсдэлийг автоматаар шинжилдэг.", score: 2 }
+      ]
+    }
+  ];
+
+  function updateProgressUI() {
+    const percent = (currentSlide / totalSlides) * 100;
+    const progressLine = document.getElementById('slide-top-progress');
+    if (progressLine) progressLine.style.width = `${percent}%`;
+
+    const progressBadge = document.getElementById('slide-progress-badge');
+    if (progressBadge) progressBadge.innerText = `Слайд: ${currentSlide} / ${totalSlides}`;
+
+    for (let i = 1; i <= totalSlides; i++) {
+      const dot = document.getElementById(`dot-${i}`);
+      if (dot) {
+        if (i === currentSlide) {
+          dot.className = "px-2 py-1.5 rounded-md cursor-pointer bg-white text-cobalt-900 font-bold g-transition shadow-sm";
+        } else {
+          dot.className = "px-2.5 py-1.5 rounded-md cursor-pointer hover:bg-white/60 g-transition text-cobalt-950";
+        }
+      }
+    }
+
+    const mobileDotsContainer = document.getElementById('mobile-dots');
+    if (mobileDotsContainer) {
+      mobileDotsContainer.innerHTML = '';
+      for (let i = 1; i <= totalSlides; i++) {
+        const dotEl = document.createElement('span');
+        dotEl.className = `w-2 h-2 rounded-full g-transition ${i === currentSlide ? 'bg-cobalt-600 w-4' : 'bg-slate-300'}`;
+        mobileDotsContainer.appendChild(dotEl);
+      }
+    }
+  }
+
+  function calculateROI() {
+    const empCountEl = document.getElementById('calc-emp-count');
+    const salaryEl = document.getElementById('calc-salary');
+    const hoursEl = document.getElementById('calc-hours');
+    if (!empCountEl || !salaryEl || !hoursEl) return;
+
+    const empCount = parseFloat(empCountEl.value);
+    const avgSalary = parseFloat(salaryEl.value);
+    const wastedHours = parseFloat(hoursEl.value);
+
+    const valEmpCount = document.getElementById('val-emp-count');
+    const valSalary = document.getElementById('val-salary');
+    const valHours = document.getElementById('val-hours');
+    if (valEmpCount) valEmpCount.innerText = empCount + ' ажилтан';
+    if (valSalary) valSalary.innerText = (avgSalary / 1000000).toFixed(1) + ' сая ₮';
+    if (valHours) valHours.innerText = wastedHours + ' цаг';
+
+    const hourlyRate = avgSalary / 160;
+    const weeklyWastageCost = hourlyRate * wastedHours;
+    const monthlyWastageCostPerEmp = weeklyWastageCost * 4;
+    const totalMonthlyWastage = monthlyWastageCostPerEmp * empCount;
+    const monthlySavings = totalMonthlyWastage * 0.60;
+    const annualSavings = monthlySavings * 12;
+    const roiFactor = monthlySavings / 950000;
+
+    const resMonthlySavings = document.getElementById('res-monthly-savings');
+    const resAnnualSavings = document.getElementById('res-annual-savings');
+    const resRoiRatio = document.getElementById('res-roi-ratio');
+    if (resMonthlySavings) resMonthlySavings.innerText = Math.round(monthlySavings).toLocaleString('mn-MN') + ' ₮';
+    if (resAnnualSavings) resAnnualSavings.innerText = Math.round(annualSavings).toLocaleString('mn-MN') + ' ₮';
+    if (resRoiRatio) resRoiRatio.innerText = roiFactor.toFixed(1) + 'x';
+  }
+
+  /* ===== Poster gallery (auto-scroll) ===== */
+  function renderPosterMarquee() {
+    const track = document.getElementById('poster-track');
+    if (!track || track.dataset.rendered === "1") return;
+
+    const buildCard = (p) => {
+      const card = document.createElement('div');
+      card.className = "poster-card";
+      card.onclick = () => openLightbox(p.src);
+      card.innerHTML =
+        `<img src="${p.src}" alt="${p.name} — ${p.topic}" loading="lazy">` +
+        `<div style="padding:10px 12px;background:#fff;">` +
+        `<p style="font-size:12px;font-weight:800;color:#1b2a8a;margin:0;">${p.name}</p>` +
+        `<p style="font-size:10px;color:#475569;margin:2px 0 0;line-height:1.3;">${p.topic}</p>` +
+        `</div>`;
+      return card;
+    };
+
+    // Render twice so the -50% loop is seamless
+    [...posters, ...posters].forEach(p => track.appendChild(buildCard(p)));
+    track.dataset.rendered = "1";
+  }
+
+  function openLightbox(src) {
+    const box = document.getElementById('poster-lightbox');
+    const img = document.getElementById('poster-lightbox-img');
+    if (box && img) {
+      img.src = src;
+      box.classList.remove('opacity-0', 'pointer-events-none');
+      lightboxOpen = true;
+    }
+  }
+
+  function closeLightbox() {
+    const box = document.getElementById('poster-lightbox');
+    if (box) box.classList.add('opacity-0', 'pointer-events-none');
+    lightboxOpen = false;
+  }
+
+  /* ===== Quiz ===== */
+  function startQuiz() {
+    quizCurrentStep = 0;
+    quizScore = 0;
+    document.getElementById('quiz-view-start').classList.add('hidden');
+    document.getElementById('quiz-view-result').classList.add('hidden');
+    document.getElementById('quiz-view-play').classList.remove('hidden');
+    showQuizQuestion();
+  }
+
+  function showQuizQuestion() {
+    const qData = quizQuestions[quizCurrentStep];
+    const playView = document.getElementById('quiz-view-play');
+    if (!playView) return;
+
+    const stepNum = quizCurrentStep + 1;
+    const percent = (stepNum / quizQuestions.length) * 100;
+    document.getElementById('quiz-progress-text').innerText = `Алхам ${stepNum} / ${quizQuestions.length}`;
+    document.getElementById('quiz-progress-bar').style.width = `${percent}%`;
+    document.getElementById('quiz-question-title').innerText = qData.question;
+
+    const optContainer = document.getElementById('quiz-options');
+    optContainer.innerHTML = '';
+    qData.options.forEach((opt) => {
+      const btn = document.createElement('button');
+      btn.className = "w-full p-3.5 bg-slate-50 hover:bg-cobalt-50 text-left text-xs md:text-sm font-medium border border-slate-200 hover:border-cobalt-600 rounded-lg g-transition focus:outline-none";
+      btn.innerText = opt.text;
+      btn.onclick = () => selectQuizOption(opt.score);
+      optContainer.appendChild(btn);
+    });
+  }
+
+  function selectQuizOption(score) {
+    quizScore += score;
+    quizCurrentStep++;
+    if (quizCurrentStep < quizQuestions.length) {
+      showQuizQuestion();
+    } else {
+      showQuizResults();
+    }
+  }
+
+  function showQuizResults() {
+    document.getElementById('quiz-view-play').classList.add('hidden');
+    document.getElementById('quiz-view-result').classList.remove('hidden');
+
+    const maxScore = quizQuestions.length * 2;
+    const finalScoreEl = document.getElementById('quiz-score-val');
+    const badgeEl = document.getElementById('quiz-score-badge');
+    const feedbackEl = document.getElementById('quiz-result-feedback');
+
+    finalScoreEl.innerText = `${quizScore} / ${maxScore}`;
+
+    if (quizScore <= 3) {
+      badgeEl.innerText = "Эрсдэлтэй шат";
+      badgeEl.className = "inline-block text-[9px] font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded";
+      feedbackEl.innerText = "Танай байгууллага уламжлалт, гараар удирдах арга барилтай хэвээр байна. Үйл ажиллагааны зорилго, процессууд уялдаа сул тул бүтээмжийн алдагдал өндөр байна. Энэхүү 3 долоо хоногийн 'Business Level Up' хөтөлбөрт хамрагдаж дижитал шилжилтийн системтэй, оношлогддог бат бөх суурийг яаралтай угсрах шаардлагатай байна.";
+    } else if (quizScore <= 7) {
+      badgeEl.innerText = "Дунд шат";
+      badgeEl.className = "inline-block text-[9px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded";
+      feedbackEl.innerText = "Танай байгууллага системжих эхний алхмуудаа амжилттай хийсэн ч автоматжуулалт болон удирдах урсгалуудын уялдаа холбоо сул байна. Одоогийн процессуудаа зөвхөн зураад зогсохгүй, тэдгээрийг TUSS.io програм дээр бодит ажлын урсгал болгон комплаенсийн шинжилгээ, үүргийн онооны системээр баяжуулах нь бүтээмжийг 10х дахин өсгөх болно.";
+    } else {
+      badgeEl.innerText = "Дээд шат";
+      badgeEl.className = "inline-block text-[9px] font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded";
+      feedbackEl.innerText = "Баяр хүргэе! Танай байгууллага дижиталд шилжихэд маш сайн бэлтгэгдсэн байна. Та системт хандлагыг маш сайн ойлгодог удирдагч юм. tuss.io платформын комплаенс, зөрүүний шинжилгээ, AI журам үүсгэх зэрэг хамгийн сүүлийн үеийн ухаалаг хэрэгслүүдийг өөрийн үйл ажиллагаандаа төгс нутагшуулж, дараагийн түвшний бүтээмжийг амжилттай удирдах боломжтой.";
+    }
+  }
+
+  function resetQuiz() {
+    document.getElementById('quiz-view-result').classList.add('hidden');
+    document.getElementById('quiz-view-play').classList.add('hidden');
+    document.getElementById('quiz-view-start').classList.remove('hidden');
+  }
+
+  function goToSlide(slideIndex) {
+    const prevActive = document.getElementById(`slide-${currentSlide}`);
+    if (prevActive) prevActive.classList.remove('active');
+    currentSlide = slideIndex;
+    const newActive = document.getElementById(`slide-${currentSlide}`);
+    if (newActive) newActive.classList.add('active');
+    updateProgressUI();
+  }
+
+  function nextSlide() { if (currentSlide < totalSlides) goToSlide(currentSlide + 1); }
+  function prevSlide() { if (currentSlide > 1) goToSlide(currentSlide - 1); }
+
+  function handleSwipe() {
+    if (lightboxOpen) return;
+    if (touchEndX < touchStartX - 50) nextSlide();
+    if (touchEndX > touchStartX + 50) prevSlide();
+  }
+
+  function openComplianceModal() {
+    const modal = document.getElementById('compliance-modal');
+    if (modal) {
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      const container = modal.querySelector('.bg-white\\/95') || modal.querySelector('div');
+      if (container) { container.classList.remove('scale-95'); container.classList.add('scale-100'); }
+    }
+  }
+
+  function closeComplianceModal() {
+    const modal = document.getElementById('compliance-modal');
+    if (modal) {
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      const container = modal.querySelector('.bg-white\\/95') || modal.querySelector('div');
+      if (container) { container.classList.remove('scale-100'); container.classList.add('scale-95'); }
+    }
+  }
+
+  /* ===== Registration → Google Sheet ===== */
+  function openRegisterModal() {
+    const modal = document.getElementById('register-modal');
+    if (!modal) return;
+    document.getElementById('register-form-view').classList.remove('hidden');
+    document.getElementById('register-success-view').classList.add('hidden');
+    modal.classList.remove('opacity-0', 'pointer-events-none');
+    const card = modal.querySelector('.scale-95, .scale-100');
+    if (card) { card.classList.remove('scale-95'); card.classList.add('scale-100'); }
+  }
+
+  function closeRegisterModal() {
+    const modal = document.getElementById('register-modal');
+    if (!modal) return;
+    modal.classList.add('opacity-0', 'pointer-events-none');
+    const card = modal.querySelector('.scale-95, .scale-100');
+    if (card) { card.classList.remove('scale-100'); card.classList.add('scale-95'); }
+  }
+
+  function copyAccount() {
+    const txt = (document.getElementById('reg-account')?.innerText || '').replace(/\s+/g, '');
+    if (navigator.clipboard) navigator.clipboard.writeText(txt).catch(() => {});
+  }
+
+  function showRegError(msg) {
+    const el = document.getElementById('reg-error');
+    if (el) { el.innerText = msg; el.classList.remove('hidden'); }
+  }
+
+  async function submitRegister() {
+    const name  = document.getElementById('reg-name').value.trim();
+    const phone = document.getElementById('reg-phone').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const goal  = document.getElementById('reg-goal').value.trim();
+    const honey = document.getElementById('reg-company').value.trim(); // honeypot
+
+    const errEl = document.getElementById('reg-error');
+    if (errEl) errEl.classList.add('hidden');
+
+    if (!name)  return showRegError('Бүртгүүлэгчийн нэрийг заавал оруулна уу!');
+    if (!phone) return showRegError('Утасны дугаарыг заавал оруулна уу!');
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showRegError('Имэйл хаягийг зөв оруулна уу!');
+    if (honey) return; // bot filled hidden field → silently ignore
+
+    if (!SHEET_ENDPOINT) {
+      return showRegError('Бүртгэлийн холболт тохируулагдаагүй байна. (SHEET_ENDPOINT хоосон байна — README-г үзнэ үү.)');
+    }
+
+    const btn = document.getElementById('reg-submit-btn');
+    const label = document.getElementById('reg-submit-label');
+    if (btn) btn.disabled = true;
+    if (label) label.innerText = 'Илгээж байна...';
+
+    try {
+      const fd = new FormData();
+      fd.append('name', name);
+      fd.append('phone', phone);
+      fd.append('email', email);
+      fd.append('goal', goal);
+      // No custom Content-Type header → "simple request", avoids CORS preflight
+      await fetch(SHEET_ENDPOINT, { method: 'POST', body: fd });
+      // Apps Script (anyone-access) accepts the row; show success optimistically
+      document.getElementById('register-form-view').classList.add('hidden');
+      document.getElementById('register-success-view').classList.remove('hidden');
+      // reset fields
+      ['reg-name','reg-phone','reg-email','reg-goal'].forEach(id => { const f = document.getElementById(id); if (f) f.value=''; });
+    } catch (err) {
+      showRegError('Илгээхэд алдаа гарлаа. Дараа дахин оролдоно уу.');
+    } finally {
+      if (btn) btn.disabled = false;
+      if (label) label.innerText = 'Бүртгэлээ илгээх';
+    }
+  }
+
+  document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, false);
+  document.addEventListener('touchend', (e) => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); }, false);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeLightbox();
+      closeComplianceModal();
+      closeRegisterModal();
+      return;
+    }
+    // Don't navigate slides while an enlarged poster is open
+    if (lightboxOpen) return;
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+      nextSlide();
+    } else if (e.key === 'ArrowLeft') {
+      prevSlide();
+    }
+  });
+
+  window.onload = function() {
+    updateProgressUI();
+    calculateROI();
+    renderPosterMarquee();
+  }
+</script>
+</body>
+</html>
